@@ -126,8 +126,8 @@ func offline(ctx context.Context, device *model.DeviceOutput) (err error) {
 		Status:     "offline",
 		CreateTime: gtime.Now().Unix(),
 	}
-	if err == nil {
-		err = service.AlarmRule().Check(ctx, device.ProductKey, device.Key, consts.AlarmTriggerTypeOffline, data)
-	}
+
+	err = service.AlarmRule().Check(ctx, device.ProductKey, device.Key, consts.AlarmTriggerTypeOffline, data)
+
 	return
 }

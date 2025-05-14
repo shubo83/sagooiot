@@ -974,9 +974,6 @@ func (s *sDevDevice) GetProperty(ctx context.Context, in *model.DeviceGetPropert
 // GetPropertyList 设备属性详情列表
 func (s *sDevDevice) GetPropertyList(ctx context.Context, in *model.DeviceGetPropertyListInput) (out *model.DeviceGetPropertyListOutput, err error) {
 	resultList, total, currentPage := dcache.GetDeviceDetailDataByPage(ctx, in.DeviceKey, in.PageNum, in.PageSize, consts.MsgTypePropertyReport, consts.MsgTypeGatewayBatch)
-	if err != nil {
-		return
-	}
 	out = new(model.DeviceGetPropertyListOutput)
 	out.Total = total
 	out.CurrentPage = currentPage

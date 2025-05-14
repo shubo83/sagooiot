@@ -33,43 +33,42 @@ func (s *sSysPost) GetTree(ctx context.Context, postName string, postCode string
 	postInfo, err := s.GetData(ctx, postName, postCode, status)
 	if postInfo != nil {
 		var parentNodeOut []*model.PostOut
-		if postInfo != nil {
-			//获取所有的根节点
-			for _, v := range postInfo {
-				var parentNode *model.PostOut
-				if v.ParentId == -1 {
-					if err = gconv.Scan(v, &parentNode); err != nil {
-						return
+		//获取所有的根节点
+		for _, v := range postInfo {
+			var parentNode *model.PostOut
+			if v.ParentId == -1 {
+				if err = gconv.Scan(v, &parentNode); err != nil {
+					return
+				}
+				var isExist = false
+				for _, postOut := range parentNodeOut {
+					if postOut.PostId == parentNode.PostId {
+						isExist = true
+						break
 					}
-					var isExist = false
-					for _, postOut := range parentNodeOut {
-						if postOut.PostId == parentNode.PostId {
-							isExist = true
-							break
-						}
+				}
+				if !isExist {
+					parentNodeOut = append(parentNodeOut, parentNode)
+				}
+			} else {
+				//查找根节点
+				parentPost := FindPostParentByChildrenId(ctx, int(v.ParentId))
+				if err = gconv.Scan(parentPost, &parentNode); err != nil {
+					return
+				}
+				var isExist = false
+				for _, postOut := range parentNodeOut {
+					if postOut.PostId == int64(parentPost.PostId) {
+						isExist = true
+						break
 					}
-					if !isExist {
-						parentNodeOut = append(parentNodeOut, parentNode)
-					}
-				} else {
-					//查找根节点
-					parentPost := FindPostParentByChildrenId(ctx, int(v.ParentId))
-					if err = gconv.Scan(parentPost, &parentNode); err != nil {
-						return
-					}
-					var isExist = false
-					for _, postOut := range parentNodeOut {
-						if postOut.PostId == int64(parentPost.PostId) {
-							isExist = true
-							break
-						}
-					}
-					if !isExist {
-						parentNodeOut = append(parentNodeOut, parentNode)
-					}
+				}
+				if !isExist {
+					parentNodeOut = append(parentNodeOut, parentNode)
 				}
 			}
 		}
+
 		//对父节点进行排序
 		sort.SliceStable(parentNodeOut, func(i, j int) bool {
 			return parentNodeOut[i].PostSort < parentNodeOut[j].PostSort
@@ -77,9 +76,6 @@ func (s *sSysPost) GetTree(ctx context.Context, postName string, postCode string
 		data = postTree(parentNodeOut, postInfo)
 		if len(data) == 0 {
 			if err = gconv.Scan(postInfo, &data); err != nil {
-				return
-			}
-			if err != nil {
 				return
 			}
 		}

@@ -197,11 +197,12 @@ func (s *sSysDept) Edit(ctx context.Context, input *model.EditDeptInput) (err er
 	var dept1, dept2 *entity.SysDept
 	//根据ID查看部门是否存在
 	dept1 = checkDeptId(ctx, input.DeptId, dept1)
-	dept := dept1.ParentId
-	deptAnces := dept1.Ancestors
 	if dept1 == nil {
 		return gerror.New("部门不存在")
 	}
+	dept := dept1.ParentId
+	deptAnces := dept1.Ancestors
+
 	dept2 = checkDeptName(ctx, input.DeptName, dept2, input.DeptId)
 	if dept2 != nil {
 		return gerror.New("相同部门已存在,无法修改")

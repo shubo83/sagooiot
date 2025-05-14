@@ -48,6 +48,11 @@ func (s *sAnalysisProduct) GetProductCount(ctx context.Context) (res model.Produ
 		value, err = s.getTotalData(ctx)
 		return
 	}, time.Minute*1)
+
+	if resData == nil {
+		return
+	}
+
 	err = gconv.Struct(resData.Val(), &res)
 	return
 }

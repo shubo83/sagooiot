@@ -110,6 +110,13 @@ func (s *sLogin) Login(ctx context.Context, verifyKey string, captcha string, us
 // CheckPwdErrorNum 验证密码错误次数
 func (s *sLogin) CheckPwdErrorNum(ctx context.Context, userName string) (err error) {
 	tmpData, err := cache.Instance().Get(ctx, consts.CacheSysErrorPrefix+"_"+gconv.String(userName))
+	if err != nil {
+		return
+	}
+
+	if tmpData == nil {
+		return
+	}
 	if tmpData.Val() != nil {
 		//获取密码错误次数和限制登录时间
 		configKeys := []string{consts.SysPasswordErrorNum, consts.SysAgainLoginDate}

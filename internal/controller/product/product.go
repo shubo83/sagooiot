@@ -30,6 +30,12 @@ type cProduct struct{}
 
 func (c *cProduct) Detail(ctx context.Context, req *product.DetailProductReq) (res *product.DetailProductRes, err error) {
 	p, err := service.DevProduct().Detail(ctx, req.ProductKey)
+	if err != nil {
+		return
+	}
+	if p == nil {
+		return nil, gerror.NewCode(gcode.CodeMissingParameter, "产品不存在")
+	}
 	// 获取产品的设备数量
 	totals, err := service.DevDevice().TotalByProductKey(ctx, []string{p.Key})
 	if err != nil {
@@ -44,6 +50,9 @@ func (c *cProduct) Detail(ctx context.Context, req *product.DetailProductReq) (r
 
 func (c *cProduct) ListForPage(ctx context.Context, req *product.ListForPageReq) (res *product.ListForPageRes, err error) {
 	out, err := service.DevProduct().ListForPage(ctx, &req.ListForPageInput)
+	if err != nil {
+		return
+	}
 	res = &product.ListForPageRes{
 		ListForPageOutput: *out,
 	}

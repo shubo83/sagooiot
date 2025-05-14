@@ -47,7 +47,7 @@ func TunnelOnlineAction(ctx context.Context, serverId int, tunnelId string, devi
 			g.Log().Error(ctx, err)
 			return
 		} else {
-			if deviceRes != nil && deviceRes.Status != consts.DeviceStatueOnline {
+			if deviceRes.Status != consts.DeviceStatueOnline {
 				if dataBusOfflineErr := baseLogic.Online(ctx, model.DeviceOnlineMessage{
 					DeviceKey:  deviceRes.DevDevice.Key,
 					ProductKey: deviceRes.Product.Key,
@@ -72,7 +72,7 @@ func TunnelOfflineAction(ctx context.Context, serverId int, tunnelId, deviceKey 
 		if deviceStopError := device.GetDevice(uint64(deviceDetail.Id)).Stop(); deviceStopError != nil {
 			g.Log().Errorf(ctx, "Stop device  error:%v ,ignore", deviceStopError)
 		}
-		if deviceDetail != nil && deviceDetail.Status == consts.DeviceStatueOnline {
+		if deviceDetail.Status == consts.DeviceStatueOnline {
 			if offlineErr := baseLogic.Offline(ctx, model.DeviceOfflineMessage{
 				DeviceKey:  deviceKey,
 				ProductKey: deviceDetail.Product.Key,

@@ -30,6 +30,9 @@ func init() {
 
 // List 系统参数列表
 func (s *sConfigData) List(ctx context.Context, input *model.ConfigDoInput) (total int, out []*model.SysConfigOut, err error) {
+	if input == nil {
+		input = new(model.ConfigDoInput)
+	}
 	m := dao.SysConfig.Ctx(ctx)
 	if input != nil {
 		if input.ConfigName != "" {

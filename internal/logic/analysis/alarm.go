@@ -30,6 +30,10 @@ func (s *sAnalysisAlarm) GetDeviceAlertCountByYearMonth(ctx context.Context, yea
 		value, err = s.getAlarmDataCount(ctx, "year", year)
 		return
 	}, time.Second*15)
+	if resData == nil {
+		err = errors.New("获取数据失败")
+		return
+	}
 	err = gconv.Scan(resData.Val(), &res)
 	return
 }
@@ -43,6 +47,10 @@ func (s *sAnalysisAlarm) GetDeviceAlertCountByMonthDay(ctx context.Context, mont
 		value, err = s.getAlarmDataCount(ctx, "month", gconv.String(year), month)
 		return
 	}, time.Hour)
+	if resData == nil {
+		err = errors.New("获取数据失败")
+		return
+	}
 	err = gconv.Scan(resData.Val(), &res)
 	return
 }
@@ -56,7 +64,10 @@ func (s *sAnalysisAlarm) GetDeviceAlertCountByDayHour(ctx context.Context, day s
 		value, err = s.getAlarmDataCount(ctx, "month", gconv.String(year), gconv.String(month), day)
 		return
 	}, time.Second*15)
-
+	if resData == nil {
+		err = errors.New("获取数据失败")
+		return
+	}
 	err = gconv.Scan(resData.Val(), &res)
 	return
 }
@@ -175,6 +186,10 @@ func (s *sAnalysisAlarm) GetAlarmLevelCount(ctx context.Context, dataType, date 
 		}
 		return
 	}, time.Second*15)
+	if resData == nil {
+		err = errors.New("获取数据失败")
+		return
+	}
 	err = gconv.Scan(resData.Val(), &res)
 	return
 }

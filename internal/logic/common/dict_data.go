@@ -71,6 +71,9 @@ func (s *sDictData) GetDictWithDataByType(ctx context.Context, input *model.GetD
 
 // List 获取字典数据
 func (s *sDictData) List(ctx context.Context, input *model.SysDictSearchInput) (total int, out []*model.SysDictDataOut, err error) {
+	if input == nil {
+		input = new(model.SysDictSearchInput)
+	}
 	m := dao.SysDictData.Ctx(ctx)
 	if input != nil {
 		if input.DictLabel != "" {

@@ -60,9 +60,6 @@ func (nx Nx) tryLock(ctx context.Context) (bool, error) {
 	cmd := nx.ops.redis.SetNX(ctx, nx.ops.key, 1, time.Duration(nx.ops.expire)*time.Second)
 	_, err := cmd.Result()
 	if err != nil {
-		if err == nil || err.Error() == "redis: nil" {
-			return false, nil
-		}
 		return false, err
 	}
 	return true, nil

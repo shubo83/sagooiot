@@ -76,7 +76,7 @@ func (s *sAlarmRule) Cache(ctx context.Context) (rs map[string][]model.AlarmRule
 		}
 		if v.Action != "" {
 			performActionErr := json.Unmarshal([]byte(v.Action), &v.PerformAction)
-			if err != nil {
+			if performActionErr != nil {
 				return nil, performActionErr
 			}
 		}

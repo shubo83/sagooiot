@@ -158,9 +158,13 @@ func (m *Manager) StartPlugin(id string) (err error) {
 		Plugins:         m.pluginMap(id),
 		Cmd:             exec.Command(path),
 	})
-	if err != nil {
-		g.Log().Error(context.Background(), id, "插件加载出错", err.Error())
+	if p == nil {
+		p = &PluginInfo{
+			ID:   id,
+			Path: path,
+		}
 	}
+
 	p.Client = client
 	g.Log().Debugf(context.Background(), "注册插件 type=%s, id=%s, impl=%s", m.Type, id, p.Path)
 

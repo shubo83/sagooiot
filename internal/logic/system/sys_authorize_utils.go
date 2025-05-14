@@ -194,6 +194,13 @@ func ApiTree(parentNodeRes []*model.SysApiTreeOut, data []*model.SysApiTreeOut) 
 func GetMenuInfo(ctx context.Context, menuIds []int) (userMenuTreeOut []*model.UserMenuTreeOut, err error) {
 	//查看REDIS是否存在
 	tmpData, err := cache.Instance().Get(ctx, consts.CacheSysMenu)
+	if err != nil {
+		return
+	}
+	if tmpData == nil {
+		err = gerror.New("获取菜单失败")
+		return
+	}
 	//将缓存菜单转为struct
 	var tmpMenuInfo []*entity.SysMenu
 	if err = json.Unmarshal([]byte(tmpData.Val().(string)), &tmpMenuInfo); err != nil {

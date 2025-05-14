@@ -20,9 +20,7 @@ func getDeviceKeys(ctx context.Context, productKey string) (deviceKeys []string)
 		g.Log().Debug(ctx, err.Error())
 		return
 	}
-	if err != nil {
-		return
-	}
+
 	for _, device := range deviceList {
 		deviceKeys = append(deviceKeys, device.Key)
 	}

@@ -39,6 +39,17 @@ func (s *sSysApi) GetInfoByIds(ctx context.Context, ids []int) (data []*entity.S
 	//获取缓存信息
 	var tmpData *gvar.Var
 	tmpData, err = cache.Instance().Get(ctx, consts.CacheSysApi)
+	if err != nil {
+		return
+	}
+
+	if tmpData == nil {
+		err = dao.SysApi.Ctx(ctx).Where(g.Map{
+			dao.SysApi.Columns().IsDeleted: 0,
+			dao.SysApi.Columns().Status:    1,
+		}).Scan(&data)
+
+	}
 
 	var tmpSysApiInfo []*entity.SysApi
 

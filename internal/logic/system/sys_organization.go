@@ -213,11 +213,13 @@ func (s *sSysOrganization) Edit(ctx context.Context, input *model.EditOrganizati
 	var organization1, organization2 *entity.SysOrganization
 	//根据ID查看组织是否存在
 	organization1 = checkOrganizationId(ctx, input.Id, organization1)
-	organization := organization1.ParentId
-	organizationAnces := organization1.Ancestors
 	if organization1 == nil {
 		return gerror.New("区域不存在")
 	}
+
+	organization := organization1.ParentId
+	organizationAnces := organization1.Ancestors
+
 	organization2 = checkOrganizationName(ctx, input.Name, input.Id)
 	if organization2 != nil {
 		return gerror.New("相同区域已存在,无法修改")

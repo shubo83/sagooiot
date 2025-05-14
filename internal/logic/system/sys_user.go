@@ -638,6 +638,13 @@ func (s *sSysUser) CurrentUser(ctx context.Context) (userInfoOut *model.UserInfo
 	}
 	tmpUserAuthorize, err := cache.Instance().Get(ctx, consts.CacheUserAuthorize+"_"+gconv.String(loginUserId))
 	tmpUserInfo, err := cache.Instance().Get(ctx, consts.CacheUserInfo+"_"+gconv.String(loginUserId))
+	if err != nil {
+		return
+	}
+	if tmpUserAuthorize == nil || tmpUserInfo == nil {
+		err = gerror.New("无登录用户信息,请先登录!")
+	}
+
 	if tmpUserAuthorize.Val() != nil && tmpUserInfo.Val() != nil {
 		if err = json.Unmarshal([]byte(tmpUserAuthorize.Val().(string)), &menuTreeOut); err != nil {
 			return
@@ -841,13 +848,6 @@ func (s *sSysUser) CurrentUser(ctx context.Context) (userInfoOut *model.UserInfo
 		//根据菜单接口ID数组获取接口信息
 		menuApiInfo, menuApiErr := service.SysMenuApi().GetInfoByIds(ctx, menuApiIds)
 		if menuApiErr != nil {
-			return
-		}
-		/*if menuApiInfo == nil {
-			err = gerror.New("未配置相关接口访问权限, 请联系系统管理员")
-			return
-		}*/
-		if err != nil {
 			return
 		}
 

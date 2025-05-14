@@ -20,6 +20,7 @@ func TestDatabaseFactory(t *testing.T) {
 
 	if td == nil {
 		t.Error(errors.New("factory err"))
+		return
 	}
 	td.Close()
 	t.Log("创建 Tdengine 数据库实例成功")
@@ -33,9 +34,7 @@ func TestDatabaseFactory(t *testing.T) {
 	}
 	// 使用工厂函数创建 Influxdb 数据库实例
 	idb := DatabaseFactory(comm.DBInfluxdb, option2)
-	if td == nil {
-		t.Error(errors.New("factory err"))
-	}
+
 	idb.Close()
 	t.Log("创建 Influxdb 数据库实例成功")
 }

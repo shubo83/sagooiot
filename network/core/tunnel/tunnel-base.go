@@ -112,12 +112,16 @@ func (l *TunnelBase) ReadData(ctx context.Context, deviceKey string, data []byte
 		g.Log().Errorf(ctx, "get deviceInfo error: %v,  deviceKey:%s, message ignored", err, deviceKey)
 		return
 	}
+	if deviceDetail == nil {
+		g.Log().Errorf(ctx, "deviceKey:%s not found,ignore", deviceKey)
+		return
+	}
 	productDetail, productDetailErr := service.DevProduct().Detail(ctx, deviceDetail.Product.Key)
 	if productDetailErr != nil || productDetail == nil {
 		g.Log().Errorf(ctx, "find product info error: %v,  productKey:%s, message ignored", productDetailErr, deviceDetail.Product.Key)
 		return
 	}
-	if deviceDetail != nil && deviceDetail.Status != consts.DeviceStatueOnline {
+	if deviceDetail.Status != consts.DeviceStatueOnline {
 		if deviceOnlineErr := baseLogic.Online(ctx, networkModel.DeviceOnlineMessage{
 			DeviceKey:  deviceKey,
 			ProductKey: deviceDetail.Product.Key,

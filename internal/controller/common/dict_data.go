@@ -28,6 +28,9 @@ func (c *cDictData) GetDictData(ctx context.Context, req *common.GetDictReq) (re
 			return
 		}
 	}
+	if data == nil {
+		data = new(model.GetDictRes)
+	}
 	res = &common.GetDictRes{
 		Data:   data.Data,
 		Values: data.Values,

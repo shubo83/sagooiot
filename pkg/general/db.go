@@ -100,12 +100,14 @@ func ListByPage(ctx context.Context, dataModel *gdb.Model, req *SelectReq, vague
 
 	countModel := dataModel
 	totalData, err := countModel.All()
-	res.Total = totalData.Len()
+
 	if err != nil {
 		glog.Debug(ctx, err)
 		err = gerror.New("获取总行数失败")
 		return
 	}
+	res.Total = totalData.Len()
+
 	if req.PageNum == 0 {
 		req.PageNum = 1
 	}

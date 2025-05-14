@@ -2,6 +2,7 @@ package alarm
 
 import (
 	"context"
+	"errors"
 	"github.com/gogf/gf/v2/util/gconv"
 	"sagooiot/internal/consts"
 	"sagooiot/internal/model"
@@ -66,7 +67,10 @@ func (s *sAlarmRule) NoticeAction(ctx context.Context, rule model.AlarmRuleOutpu
 		if i == 9 || i == 15 {
 			key := consts.DeviceAlarmLogPrefix + rule.ProductKey + deviceKey + expression
 			alarmLogData, err := cache.Instance().Get(ctx, key)
-
+			if alarmLogData == nil {
+				err = errors.New("获取数据失败")
+				return
+			}
 			var alarmLog model.AlarmLogOutput
 			err = gconv.Scan(alarmLogData.Val(), &alarmLog)
 			if err != nil {

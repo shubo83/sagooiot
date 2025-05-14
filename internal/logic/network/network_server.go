@@ -117,7 +117,7 @@ func (s *sNetworkServer) AddServer(ctx context.Context, in model.NetworkServerAd
 	if lastIdErr != nil {
 		return lastIdErr
 	}
-	if err == nil && in.Status == consts.ServerStatusOnline {
+	if in.Status == consts.ServerStatusOnline {
 		return server.LoadServer(ctx, int(lastId))
 	}
 	return

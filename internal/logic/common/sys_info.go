@@ -36,7 +36,8 @@ func (s *sSysInfo) GetSysInfo(ctx context.Context) (out g.Map, err error) {
 		systemName = cfgSystemName.ConfigValue
 	}
 
-	cfgSystemCopyright, err := service.ConfigData().GetConfigByKey(ctx, consts.SysSystemCopyright)
+	cfgSystemCopyright, _ := service.ConfigData().GetConfigByKey(ctx, consts.SysSystemCopyright)
+
 	systemCopyright := "Sagoo inc."
 	if cfgSystemName != nil {
 		systemCopyright = cfgSystemCopyright.ConfigValue
@@ -109,6 +110,15 @@ func (s *sSysInfo) ServerInfoEscalation(ctx context.Context) (err error) {
 	}
 	var tmpData *gvar.Var
 	tmpData, err = cache.Instance().Get(ctx, consts.CacheServerInfo)
+
+	if err != nil {
+		return
+	}
+	if tmpData == nil {
+		err = gerror.New("获取已上报客户端信息失败")
+		return
+	}
+
 	var serverInfos []map[string]interface{}
 	if tmpData.Val() != nil {
 		err = json.Unmarshal([]byte(tmpData.Val().(string)), &serverInfos)

@@ -108,23 +108,23 @@ func (s *sSysPlugins) AddSysPlugins(ctx context.Context, file *ghttp.UploadFile)
 	if err != nil {
 		return err
 	}
-	var plugins *entity.SysPlugins
-	if err = gconv.Scan(result, &plugins); err != nil {
+	var sysPlugins *entity.SysPlugins
+	if err = gconv.Scan(result, &sysPlugins); err != nil {
 		return
 	}
-	if plugins.Types == "" {
+	if sysPlugins.Types == "" {
 		err = gerror.New("插件类型不能为空")
 		return
 	}
-	if plugins.HandleType == "" {
+	if sysPlugins.HandleType == "" {
 		err = gerror.New("处理方式类型不能为空")
 		return
 	}
-	if plugins.Name == "" {
+	if sysPlugins.Name == "" {
 		err = gerror.New("名称不能为空")
 		return
 	}
-	if plugins.Title == "" {
+	if sysPlugins.Title == "" {
 		err = gerror.New("标题不能为空")
 		return
 	}
@@ -136,28 +136,28 @@ func (s *sSysPlugins) AddSysPlugins(ctx context.Context, file *ghttp.UploadFile)
 
 		argsArr = append(argsArr, a)
 	}
-	plugins.Args = strings.Join(argsArr, ",")
+	sysPlugins.Args = strings.Join(argsArr, ",")
 	//对plugins struct赋值
 	frontend, _ := result["frontend"].(map[string]interface{})
 
-	plugins.FrontendUi = 0
+	sysPlugins.FrontendUi = 0
 	if gconv.Bool(frontend["ui"]) {
-		plugins.FrontendUi = 1
+		sysPlugins.FrontendUi = 1
 	}
 
-	plugins.FrontendUrl = frontend["url"].(string)
+	sysPlugins.FrontendUrl = frontend["url"].(string)
 
-	plugins.FrontendConfiguration = 0
+	sysPlugins.FrontendConfiguration = 0
 	if gconv.Bool(frontend["configuration"]) {
-		plugins.FrontendConfiguration = 1
+		sysPlugins.FrontendConfiguration = 1
 	}
 	//判断名称是否重复
-	pluginByName, _ := s.GetSysPluginsByName(ctx, plugins.Name)
+	pluginByName, _ := s.GetSysPluginsByName(ctx, sysPlugins.Name)
 	if pluginByName != nil {
 		return gerror.New("插件名称不能重复")
 	}
 	//判断标题是否重复
-	pluginByTitle, _ := s.GetSysPluginsByTitle(ctx, plugins.Title)
+	pluginByTitle, _ := s.GetSysPluginsByTitle(ctx, sysPlugins.Title)
 	if pluginByTitle != nil {
 		return gerror.New("插件标题不能重复")
 	}
@@ -166,22 +166,22 @@ func (s *sSysPlugins) AddSysPlugins(ctx context.Context, file *ghttp.UploadFile)
 		//添加插件
 		_, err = dao.SysPlugins.Ctx(ctx).Data(do.SysPlugins{
 			DeptId:                service.Context().GetUserDeptId(ctx),
-			Types:                 plugins.Types,
-			HandleType:            plugins.HandleType,
-			Name:                  plugins.Name,
-			Title:                 plugins.Title,
-			Description:           plugins.Description,
-			Version:               plugins.Version,
-			Author:                plugins.Author,
-			Icon:                  plugins.Icon,
-			Link:                  plugins.Link,
-			Command:               plugins.Command,
-			Args:                  plugins.Args,
+			Types:                 sysPlugins.Types,
+			HandleType:            sysPlugins.HandleType,
+			Name:                  sysPlugins.Name,
+			Title:                 sysPlugins.Title,
+			Description:           sysPlugins.Description,
+			Version:               sysPlugins.Version,
+			Author:                sysPlugins.Author,
+			Icon:                  sysPlugins.Icon,
+			Link:                  sysPlugins.Link,
+			Command:               sysPlugins.Command,
+			Args:                  sysPlugins.Args,
 			Status:                0,
-			FrontendUi:            plugins.FrontendUi,
-			FrontendUrl:           plugins.FrontendUrl,
-			FrontendConfiguration: plugins.FrontendConfiguration,
-			StartTime:             plugins.StartTime,
+			FrontendUi:            sysPlugins.FrontendUi,
+			FrontendUrl:           sysPlugins.FrontendUrl,
+			FrontendConfiguration: sysPlugins.FrontendConfiguration,
+			StartTime:             sysPlugins.StartTime,
 			IsDeleted:             0,
 			CreatedBy:             uint(service.Context().GetUserId(ctx)),
 			CreatedAt:             gtime.Now(),

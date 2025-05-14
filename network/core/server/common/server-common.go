@@ -33,7 +33,7 @@ func ServerTunnelAction(ctx context.Context, serverId int, deviceKey string) {
 	if err != nil {
 		g.Log().Error(ctx, err)
 	}
-	if deviceDetail != nil && deviceDetail.Status != consts.DeviceStatueOnline {
+	if deviceDetail.Status != consts.DeviceStatueOnline {
 		if dataBusOfflineErr := baseLogic.Online(ctx, model.DeviceOnlineMessage{
 			DeviceKey:  deviceKey,
 			ProductKey: deviceDetail.Product.Key,

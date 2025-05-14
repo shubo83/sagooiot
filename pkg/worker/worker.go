@@ -222,7 +222,7 @@ func (wk Worker) Once(options ...func(*RunOptions)) (err error) {
 	_, err = wk.client.Enqueue(t, taskOpts...)
 	if ops.replace && errors.Is(err, asynq.ErrTaskIDConflict) {
 		// remove old one if replace = true
-		ctx := wk.getDefaultTimeoutCtx()
+		ctx, _ := wk.getDefaultTimeoutCtx()
 		if ops.ctx != nil {
 			ctx = ops.ctx
 		}
@@ -260,7 +260,7 @@ func (wk Worker) Cron(options ...func(*RunOptions)) (err error) {
 		MaxRetry: ops.maxRetry,
 		Timeout:  ops.timeout,
 	}
-	ctx := wk.getDefaultTimeoutCtx()
+	ctx, _ := wk.getDefaultTimeoutCtx()
 	res, err := wk.redis.HGet(ctx, wk.ops.redisPeriodKey, ops.uid).Result()
 	if err == nil {
 		var oldT periodTask
@@ -315,7 +315,7 @@ func (wk Worker) processed(ctx context.Context, uid string) {
 
 // scan 扫描并处理任务队列
 func (wk Worker) scan() {
-	ctx := wk.getDefaultTimeoutCtx()
+	ctx, _ := wk.getDefaultTimeoutCtx()
 	ok := wk.lock.Lock()
 	if !ok {
 		return
@@ -372,7 +372,7 @@ func (wk Worker) clearArchived() {
 	if err != nil {
 		return
 	}
-	ctx := wk.getDefaultTimeoutCtx()
+	ctx, _ := wk.getDefaultTimeoutCtx()
 	for _, item := range list {
 		last := carbon.CreateFromStdTime(item.LastFailedAt)
 		if !last.IsZero() && item.Retried < item.MaxRetry {
@@ -422,9 +422,15 @@ func (wk Worker) clearArchived() {
 }
 
 // getDefaultTimeoutCtx 获取带有默认超时的上下文
-func (wk Worker) getDefaultTimeoutCtx() context.Context {
-	c, _ := context.WithTimeout(context.Background(), time.Duration(wk.ops.timeout)*time.Second)
-	return c
+func (wk Worker) getDefaultTimeoutCtx() (context.Context, context.CancelFunc) {
+	// 确保 timeout 合法，防止负值或过大值造成意外行为
+	timeoutSec := wk.ops.timeout
+	if timeoutSec <= 0 {
+		timeoutSec = 50 // 可选：使用默认值兜底
+	}
+	timeoutDuration := time.Duration(timeoutSec) * time.Second
+
+	return context.WithTimeout(context.Background(), timeoutDuration)
 }
 
 // getNext 计算下一次执行时间

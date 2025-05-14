@@ -14,7 +14,6 @@ import (
 	"sagooiot/internal/consts"
 	"sagooiot/internal/dao"
 	"sagooiot/internal/model"
-	"sagooiot/internal/model/do"
 	"sagooiot/internal/model/entity"
 	"sagooiot/internal/service"
 	"sagooiot/pkg/utility/utils"
@@ -102,117 +101,106 @@ func (s *sSysOperLog) Invoke(ctx context.Context, userId int, url *url.URL, para
 
 // Add 添加操作日志
 func (s *sSysOperLog) Add(ctx context.Context, userId int, url *url.URL, param g.Map, method string, clientIp string, res map[string]interface{}, erro error) (err error) {
-	var operLogInfo = new(entity.SysOperLog)
-	//根据用户ID查询用户信息
+	operLogInfo := &entity.SysOperLog{
+		OperTime: gtime.Now(),
+	}
+
+	// 查询用户信息
 	var userInfo *entity.SysUser
 	err = dao.SysUser.Ctx(ctx).Where(g.Map{
 		dao.SysUser.Columns().Id:        userId,
 		dao.SysUser.Columns().IsDeleted: 0,
 		dao.SysUser.Columns().Status:    1,
 	}).Scan(&userInfo)
+	if err != nil {
+		return err
+	}
 	if userInfo != nil {
-		//操作人员
 		operLogInfo.OperName = userInfo.UserName
-		//获取用户部门信息
+
+		// 查询部门信息
 		var deptInfo *entity.SysDept
 		err = dao.SysDept.Ctx(ctx).Where(g.Map{
 			dao.SysDept.Columns().DeptId:    userInfo.DeptId,
 			dao.SysDept.Columns().IsDeleted: 0,
 			dao.SysDept.Columns().Status:    1,
 		}).Scan(&deptInfo)
+		if err != nil {
+			return err
+		}
 		if deptInfo != nil {
-			//部门名称
 			operLogInfo.DeptName = deptInfo.DeptName
 		}
 	}
-	//请求地址
+
+	// 请求地址和方法
 	operLogInfo.Method = url.Path
-	//根据请求地址获取请求信息
-	apiInfo, _ := service.SysApi().GetInfoByAddress(ctx, url.Path)
-	if apiInfo != nil {
+	apiInfo, apiErr := service.SysApi().GetInfoByAddress(ctx, url.Path)
+	if apiErr == nil && apiInfo != nil {
 		operLogInfo.Title = apiInfo.Name
 	}
-	//请求方法
+
+	// 请求方法和业务类型
 	operLogInfo.RequestMethod = method
-	//操作类型
-	operLogInfo.OperatorType = 1
-	//业务类型
-	if strings.EqualFold(method, "POST") {
-		operLogInfo.BusinessType = 1
-	} else if strings.EqualFold(method, "PUT") {
-		operLogInfo.BusinessType = 2
-	} else if strings.EqualFold(method, "DELETE") {
-		operLogInfo.BusinessType = 3
+	businessTypeMap := map[string]int{
+		"POST":   1,
+		"PUT":    2,
+		"DELETE": 3,
+	}
+	if bt, ok := businessTypeMap[strings.ToUpper(method)]; ok {
+		operLogInfo.BusinessType = bt
 	} else {
 		operLogInfo.BusinessType = 0
 	}
-	//请求地址
-	rawQuery := url.RawQuery
-	if rawQuery != "" {
-		rawQuery = "?" + rawQuery
-	}
-	operLogInfo.OperUrl = url.Path + rawQuery
-	//客户端IP
+	operLogInfo.OperatorType = 1
+
+	// 请求URL
+	operLogInfo.OperUrl = url.Path + func() string {
+		if url.RawQuery != "" {
+			return "?" + url.RawQuery
+		}
+		return ""
+	}()
+
+	// 客户端IP和位置
 	operLogInfo.OperIp = clientIp
-	//操作地址
-	operLogInfo.OperLocation = utils.GetCityByIp(operLogInfo.OperIp)
-	//获取当前时间
-	time, err := gtime.StrToTimeFormat(gtime.Datetime(), "2006-01-02 15:04:05")
-	if err != nil {
-		return
-	}
-	//请求时间
-	operLogInfo.OperTime = time
-	//参数
+	operLogInfo.OperLocation = utils.GetCityByIp(clientIp)
+
+	// 参数
 	if param != nil {
-		b, _ := gjson.Encode(param)
-		if len(b) > 0 {
+		if b, _ := gjson.Encode(param); len(b) > 0 {
 			operLogInfo.OperParam = string(b)
 		}
 	}
-	var code gcode.Code = gcode.CodeOK
+
+	// 错误码和状态
+	var code gcode.Code
 	if erro != nil {
 		code = gerror.Code(erro)
 		if code == gcode.CodeNil {
 			code = gcode.CodeInternalError
 		}
 	}
-	//返回参数
-	if code.Code() != 0 {
+	if code != nil && code.Code() != 0 {
 		operLogInfo.Status = 0
 		errMsg := erro.Error()
-		var (
-			errorMsgMap = map[string]interface{}{
-				"code":    code.Code(),
-				"message": errMsg,
-			}
-		)
-		errorMsg, _ := gjson.Encode(errorMsgMap)
-		operLogInfo.ErrorMsg = string(errorMsg)
+		errorMsgMap := map[string]interface{}{
+			"code":    code.Code(),
+			"message": errMsg,
+		}
+		if b, _ := gjson.Encode(errorMsgMap); len(b) > 0 {
+			operLogInfo.ErrorMsg = string(b)
+		}
 	} else {
 		operLogInfo.Status = 1
-		b, _ := gjson.Encode(res)
-		if len(b) > 0 {
-			operLogInfo.JsonResult = string(b)
+		if res != nil {
+			if b, _ := gjson.Encode(res); len(b) > 0 {
+				operLogInfo.JsonResult = string(b)
+			}
 		}
 	}
-	_, err = dao.SysOperLog.Ctx(ctx).Data(do.SysOperLog{
-		Title:         operLogInfo.Title,
-		BusinessType:  operLogInfo.BusinessType,
-		Method:        operLogInfo.Method,
-		RequestMethod: operLogInfo.RequestMethod,
-		OperatorType:  operLogInfo.OperatorType,
-		OperName:      operLogInfo.OperName,
-		DeptName:      operLogInfo.DeptName,
-		OperUrl:       operLogInfo.OperUrl,
-		OperIp:        operLogInfo.OperIp,
-		OperLocation:  operLogInfo.OperLocation,
-		OperParam:     operLogInfo.OperParam,
-		JsonResult:    operLogInfo.JsonResult,
-		Status:        operLogInfo.Status,
-		ErrorMsg:      operLogInfo.ErrorMsg,
-		OperTime:      operLogInfo.OperTime,
-	}).Insert()
+
+	_, err = dao.SysOperLog.Ctx(ctx).Data(operLogInfo).Insert()
 	return
 }
 

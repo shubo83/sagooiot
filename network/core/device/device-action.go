@@ -16,6 +16,10 @@ func StartAction(ctx context.Context, deviceKey string) {
 		g.Log().Error(ctx, err)
 		return
 	}
+	if deviceRes == nil {
+		g.Log().Errorf(ctx, "deviceKey:%s not found,ignore", deviceKey)
+		return
+	}
 	deviceDetail := GetDevice(uint64(deviceRes.Id))
 	if deviceDetail != nil {
 		err = deviceDetail.Start(ctx)
@@ -23,7 +27,7 @@ func StartAction(ctx context.Context, deviceKey string) {
 			g.Log().Error(ctx, err)
 			return
 		} else {
-			if deviceRes != nil && deviceRes.Status != consts.DeviceStatueOnline {
+			if deviceRes.Status != consts.DeviceStatueOnline {
 				if deviceOnlineErr := baseLogic.Online(ctx, model.DeviceOnlineMessage{
 					DeviceKey:  deviceRes.DevDevice.Key,
 					ProductKey: deviceRes.Product.Key,
@@ -50,7 +54,7 @@ func OffAction(ctx context.Context, tunnelId int) {
 		if deviceStopError := GetDevice(uint64(deviceDetail.Id)).Stop(); deviceStopError != nil {
 			g.Log().Errorf(ctx, "Stop device  error:%v ,ignore", deviceStopError)
 		}
-		if deviceDetail != nil && deviceDetail.Status == consts.DeviceStatueOnline {
+		if deviceDetail.Status == consts.DeviceStatueOnline {
 			if deviceOnlineErr := baseLogic.Offline(ctx, model.DeviceOfflineMessage{
 				DeviceKey:  tunnelInfo.DeviceKey,
 				ProductKey: deviceDetail.Product.Key,

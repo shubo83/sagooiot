@@ -182,7 +182,7 @@ func (s *sAlarmRule) getAlarmRuleList(ctx context.Context, productKey, deviceKey
 		}
 		if r.Action != "" {
 			performActionErr := json.Unmarshal([]byte(r.Action), &r.PerformAction)
-			if err != nil {
+			if performActionErr != nil {
 				return nil, performActionErr
 			}
 		}

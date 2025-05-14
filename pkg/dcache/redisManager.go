@@ -93,13 +93,6 @@ func getRedisManager(options redisOptions) *RedisManager {
 		time.Sleep(1 * time.Second)
 	}
 
-	// 如果经过重试后仍然失败，处理错误（或退出程序）
-	if err != nil {
-		// 这里可以记录错误、返回nil或退出程序
-		fmt.Printf("Failed to connect to Redis after retries: %v\n", err)
-		return nil
-	}
-
 	return &RedisManager{
 		client:         client,
 		recordDuration: recordDuration,

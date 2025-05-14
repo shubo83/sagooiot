@@ -87,6 +87,10 @@ func (client *TunnelClient) receive(ctx context.Context) {
 	if tunnelInfoErr != nil {
 		_ = mqtt.Publish(consts.GetWrapperTopic(consts.DataBusTunnel, consts.ActionError, strconv.Itoa(int(client.tunnelInfo.Id))), []byte(tunnelInfoErr.Error()))
 	} else {
+		if tunnelInfo == nil {
+			return
+		}
+
 		onlineErr := action.TunnelOnlineAction(ctx, 0, strconv.Itoa(int(client.tunnelInfo.Id)), tunnelInfo.DeviceKey)
 		if onlineErr != nil {
 			g.Log().Errorf(ctx, "tunnel online error: %v", onlineErr)

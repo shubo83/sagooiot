@@ -58,9 +58,6 @@ func TestProtocolEncode(t *testing.T) {
 	var reqData = model.DataReq{}
 	reqData.Data = gconv.Bytes(td)
 	res := p.Encode(reqData)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
 	t.Log(res)
 }
 
@@ -74,9 +71,7 @@ func TestProtocol(t *testing.T) {
 	var dr model.DataReq
 	dr.Data = data
 	res := p.Decode(dr)
-	if err != nil {
-		t.Fatal(err.Error())
-	}
+
 	t.Log(res)
 }
 

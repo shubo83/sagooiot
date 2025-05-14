@@ -233,7 +233,13 @@ func (s *sSysMenuButton) Del(ctx context.Context, id int64) (err error) {
 func (s *sSysMenuButton) GetInfoByButtonIds(ctx context.Context, ids []int) (data []*entity.SysMenuButton, err error) {
 	var tmpData *gvar.Var
 	tmpData, err = cache.Instance().Get(ctx, consts.CacheSysMenuButton)
-
+	if err != nil {
+		return
+	}
+	if tmpData == nil {
+		err = gerror.New("获取菜单按钮信息失败")
+		return
+	}
 	var tmpSysMenuButton []*entity.SysMenuButton
 
 	var menuButtonInfo []*entity.SysMenuButton
@@ -269,6 +275,13 @@ func (s *sSysMenuButton) GetInfoByMenuIds(ctx context.Context, menuIds []int) (d
 	for _, v := range menuIds {
 		var tmpData *gvar.Var
 		tmpData, err = cache.Instance().Get(ctx, consts.CacheSysMenuButton+"_"+gconv.String(v))
+		if err != nil {
+			return
+		}
+		if tmpData == nil {
+			continue
+		}
+
 		if tmpData.Val() != nil {
 			var sysMenuButton []*entity.SysMenuButton
 			err = json.Unmarshal([]byte(tmpData.Val().(string)), &sysMenuButton)
