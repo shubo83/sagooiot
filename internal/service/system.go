@@ -41,6 +41,18 @@ type (
 		WithValue(ctx context.Context, value string) context.Context
 		Value(ctx context.Context) uint64
 	}
+	ISysJobLog interface {
+		// GetJobLog 获取任务日志详情
+		GetJobLog(ctx context.Context, id int) (out *model.SysJobLogOut, err error)
+		// JobLogList 获取任务日志列表
+		JobLogList(ctx context.Context, input *model.GetJobLogListInput) (total int, out []*model.SysJobLogOut, err error)
+		// AddJobLog 添加任务日志
+		AddJobLog(ctx context.Context,input *model.SysJobLogAddInput) (err error)
+		// DelJobLogByIds 根据ID删除任务日志
+		DelJobLogByIds(ctx context.Context, ids []int) (err error)
+		// Export 导出任务日志列表
+		Export(ctx context.Context, input *model.GetJobLogListInput) (err error)
+	}
 	ISysLoginLog interface {
 		Invoke(ctx context.Context, data *model.LoginLogParams)
 		// Add 记录登录日志
@@ -455,6 +467,7 @@ var (
 	localLogin               ILogin
 	localSysAuthorize        ISysAuthorize
 	localSysJob              ISysJob
+	localSysJobLog           ISysJobLog
 	localSysLoginLog         ISysLoginLog
 	localSysMenuApi          ISysMenuApi
 	localSysUserRole         ISysUserRole
@@ -527,6 +540,17 @@ func SysJob() ISysJob {
 
 func RegisterSysJob(i ISysJob) {
 	localSysJob = i
+}
+
+func SysJobLog() ISysJobLog {
+	if localSysJob == nil {
+		panic("implement not found for interface ISysJobLog, forgot register?")
+	}
+	return localSysJobLog
+}
+
+func RegisterSysJobLog(i ISysJobLog) {
+	localSysJobLog = i
 }
 
 func SysLoginLog() ISysLoginLog {

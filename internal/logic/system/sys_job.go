@@ -144,11 +144,12 @@ func (s *sSysJob) JobStart(ctx context.Context, job *model.SysJobOut) error {
 	}
 
 	taskData := tasks.TaskJob{
-		ID:         fmt.Sprintf("%s-job-%d", job.InvokeTarget, job.JobId),
-		TaskType:   "Type-" + gconv.String(job.MisfirePolicy),
-		MethodName: job.InvokeTarget,
-		Params:     paramArr,
-		Explain:    job.JobName,
+		ID:             fmt.Sprintf("%s-job-%d", job.InvokeTarget, job.JobId),
+		TaskType:       "Type-" + gconv.String(job.MisfirePolicy),
+		MethodName:     job.InvokeTarget,
+		Params:         paramArr,
+		Explain:        job.JobName,
+		CronExpression: job.CronExpression,
 	}
 	runPayload, _ := json.Marshal(taskData)
 	if job.MisfirePolicy == 1 {
@@ -210,11 +211,12 @@ func (s *sSysJob) JobStartMult(ctx context.Context, jobsList []*model.SysJobOut)
 		}
 
 		taskData := tasks.TaskJob{
-			ID:         fmt.Sprintf("%s-job-%d", job.InvokeTarget, job.JobId),
-			TaskType:   "Type-" + gconv.String(job.MisfirePolicy),
-			MethodName: job.InvokeTarget,
-			Params:     paramArr,
-			Explain:    job.JobName,
+			ID:             fmt.Sprintf("%s-job-%d", job.InvokeTarget, job.JobId),
+			TaskType:       "Type-" + gconv.String(job.MisfirePolicy),
+			MethodName:     job.InvokeTarget,
+			Params:         paramArr,
+			Explain:        job.JobName,
+			CronExpression: job.CronExpression,
 		}
 		runPayload, _ := json.Marshal(taskData)
 
@@ -294,11 +296,12 @@ func (s *sSysJob) JobRun(ctx context.Context, job *model.SysJobOut) (err error) 
 	}
 
 	taskData := tasks.TaskJob{
-		ID:         fmt.Sprintf("%s-job-%d", job.InvokeTarget, job.JobId),
-		TaskType:   "Type-" + gconv.String(job.MisfirePolicy),
-		MethodName: job.InvokeTarget,
-		Params:     paramArr,
-		Explain:    job.JobName,
+		ID:             fmt.Sprintf("%s-job-%d", job.InvokeTarget, job.JobId),
+		TaskType:       "Type-" + gconv.String(job.MisfirePolicy),
+		MethodName:     job.InvokeTarget,
+		Params:         paramArr,
+		Explain:        job.JobName,
+		CronExpression: job.CronExpression,
 	}
 	runPayload, _ := json.Marshal(taskData)
 

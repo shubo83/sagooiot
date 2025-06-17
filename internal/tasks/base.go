@@ -1,11 +1,42 @@
 package tasks
 
+import (
+	"context"
+	"sagooiot/internal/model"
+	"sagooiot/internal/service"
+
+	"github.com/gogf/gf/v2/os/gtime"
+)
+
 type TaskJob struct {
-	ID         string        //任务ID
-	TaskType   string        //任务类型
-	MethodName string        //方法名
-	Params     []interface{} //参数
-	Explain    string        //任务描述
+	ID             string        //任务ID
+	TaskType       string        //任务类型
+	MethodName     string        //方法名
+	Params         []interface{} //参数
+	Explain        string        //任务描述
+	CronExpression string        //cron表达式
+}
+
+func (t TaskJob) SaveLog(ctx context.Context, StartTime *gtime.Time, res string, err error) error {
+	var status int
+	var exceptionInfo string
+	if err != nil {
+		status = 1 // 失败
+		exceptionInfo = err.Error()
+	} else {
+		status = 0 // 成功
+		exceptionInfo = ""
+	}
+	return service.SysJobLog().AddJobLog(ctx, &model.SysJobLogAddInput{
+		JobName:        t.Explain,
+		InvokeTarget:   t.MethodName,
+		CronExpression: t.CronExpression,
+		StartTime:      StartTime,
+		EndTime:        gtime.Now(),
+		JobMessage:     res,
+		Status:         status,
+		ExceptionInfo:  exceptionInfo,
+	})
 }
 
 func (t TaskJob) GetFuncNameList() (res map[string]string) {
