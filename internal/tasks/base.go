@@ -23,6 +23,7 @@ func (t TaskJob) SaveLog(ctx context.Context, StartTime *gtime.Time, res string,
 	if err != nil {
 		status = 1 // 失败
 		exceptionInfo = err.Error()
+		res = "任务执行失败"
 	} else {
 		status = 0 // 成功
 		exceptionInfo = ""

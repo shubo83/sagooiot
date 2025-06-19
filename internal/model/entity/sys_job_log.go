@@ -19,8 +19,8 @@ type SysJobLog struct {
 	JobMessage     string      `json:"jobMessage"     orm:"job_message"     ` // 执行结果信息
 	Status         int         `json:"status"         orm:"status"          ` // 状态（0正常 1失败）
 	ExceptionInfo  string      `json:"exceptionInfo"  orm:"exception_info"  ` // 失败原因（异常信息）
-	CreateAt       *gtime.Time `json:"createAt"       orm:"create_at"       ` // 创建时间
-	DelFlag        int         `json:"delFlag"        orm:"del_flag"        ` // 删除标志（0代表存在 1代表删除）
-	DeleteAt       *gtime.Time `json:"deleteAt"       orm:"delete_at"       ` // 删除时间
-	DeleteBy       int64       `json:"deleteBy"       orm:"delete_by"       ` // 删除人id
+	CreatedAt      *gtime.Time `json:"createdAt"      orm:"created_at"      ` // 创建时间
+	IsDeleted      int         `json:"isDeleted"      orm:"is_deleted"      ` // 删除标志（0代表存在 1代表删除）
+	DeletedAt      *gtime.Time `json:"deletedAt"      orm:"deleted_at"      ` // 删除时间
+	DeletedBy      int64       `json:"deletedBy"      orm:"deleted_by"      ` // 删除人id
 }

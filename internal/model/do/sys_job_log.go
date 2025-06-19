@@ -21,8 +21,8 @@ type SysJobLog struct {
 	JobMessage     interface{} // 执行结果信息
 	Status         interface{} // 状态（0正常 1失败）
 	ExceptionInfo  interface{} // 失败原因（异常信息）
-	CreateAt       *gtime.Time // 创建时间
-	DelFlag        interface{} // 删除标志（0代表存在 1代表删除）
-	DeleteAt       *gtime.Time // 删除时间
-	DeleteBy       interface{} // 删除人id
+	CreatedAt      *gtime.Time // 创建时间
+	IsDeleted      interface{} // 删除标志（0代表存在 1代表删除）
+	DeletedAt      *gtime.Time // 删除时间
+	DeletedBy      interface{} // 删除人id
 }

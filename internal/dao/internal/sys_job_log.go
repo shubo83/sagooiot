@@ -30,10 +30,10 @@ type SysJobLogColumns struct {
 	JobMessage     string // 执行结果信息
 	Status         string // 状态（0正常 1失败）
 	ExceptionInfo  string // 失败原因（异常信息）
-	CreateAt       string // 创建时间
-	DelFlag        string // 删除标志（0代表存在 1代表删除）
-	DeleteAt       string // 删除时间
-	DeleteBy       string // 删除人id
+	CreatedAt      string // 创建时间
+	IsDeleted      string // 删除标志（0代表存在 1代表删除）
+	DeletedAt      string // 删除时间
+	DeletedBy      string // 删除人id
 }
 
 // sysJobLogColumns holds the columns for the table sys_job_log.
@@ -47,10 +47,10 @@ var sysJobLogColumns = SysJobLogColumns{
 	JobMessage:     "job_message",
 	Status:         "status",
 	ExceptionInfo:  "exception_info",
-	CreateAt:       "create_at",
-	DelFlag:        "del_flag",
-	DeleteAt:       "delete_at",
-	DeleteBy:       "delete_by",
+	CreatedAt:      "created_at",
+	IsDeleted:      "is_deleted",
+	DeletedAt:      "deleted_at",
+	DeletedBy:      "deleted_by",
 }
 
 // NewSysJobLogDao creates and returns a new DAO object for table data access.
