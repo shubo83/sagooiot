@@ -11,6 +11,19 @@ import (
 	"github.com/gogf/gf/v2/util/gconv"
 )
 
+func (t TaskJob) ClearJobLogByDays(days string) {
+	ctx := context.Background()
+	glog.Debugf(ctx,"执行任务：清理超过%v天的定时任务日志", days)
+	startTime := gtime.Now()
+	err := service.SysJobLog().ClearJobLogByDays(ctx,gconv.Int(days))
+	if err != nil {
+		g.Log().Error(ctx, err)
+	}
+	if err := t.SaveLog(ctx, startTime, fmt.Sprintf("清理超过%v天的定时任务日志", days), err); err != nil {
+		g.Log().Error(ctx, err)
+	}
+}
+
 // ClearOperationLogByDays 清理超过指定天数的操作日志
 func (t TaskJob) ClearOperationLogByDays(days string) {
 	ctx := context.Background()

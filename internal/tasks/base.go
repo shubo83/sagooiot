@@ -42,6 +42,7 @@ func (t TaskJob) SaveLog(ctx context.Context, StartTime *gtime.Time, res string,
 
 func (t TaskJob) GetFuncNameList() (res map[string]string) {
 	res = map[string]string{
+		"ClearJobLogByDays":       "清理超过指定天数的定时任务日志",
 		"ClearOperationLogByDays": "清理超过指定天数的操作日志",
 		"ClearNoticeLogByDays":    "清理超过指定天数的通知服务日志",
 		"ClearAlarmLogByDays":     "清理超过指定天数的告警日志",

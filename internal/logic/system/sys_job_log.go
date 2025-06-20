@@ -31,7 +31,7 @@ func init() {
 func (s *sSysJobLog) GetJobLog(ctx context.Context, id int) (out *model.SysJobLogOut, err error) {
 	err = g.Try(ctx, func(ctx context.Context) {
 		out = new(model.SysJobLogOut)
-		err = dao.SysJobLog.Ctx(ctx).Where(dao.SysJobLog.Columns().IsDeleted,0).Where(dao.SysJobLog.Columns().Id, id).Scan(out)
+		err = dao.SysJobLog.Ctx(ctx).Where(dao.SysJobLog.Columns().IsDeleted, 0).Where(dao.SysJobLog.Columns().Id, id).Scan(out)
 		if err != nil {
 			err = gerror.New("获取任务日志详情失败")
 		}
@@ -48,7 +48,7 @@ func (s *sSysJobLog) JobLogList(ctx context.Context, input *model.GetJobLogListI
 			m = m.Where(dao.SysJobLog.Columns().Status, gconv.Int(input.Status))
 		}
 		if input.JobName != "" {
-			m = m.WhereLike(dao.SysJob.Columns().JobName,"%"+input.JobName+"%")
+			m = m.WhereLike(dao.SysJob.Columns().JobName, "%"+input.JobName+"%")
 		}
 		if len(input.DateRange) > 1 {
 			m = m.WhereGTE(dao.SysJobLog.Columns().CreatedAt, input.DateRange[0]+" 00:00:00")
@@ -119,7 +119,7 @@ func (s *sSysJobLog) Export(ctx context.Context, input *model.GetJobLogListInput
 			m = m.Where(dao.SysJobLog.Columns().Status, gconv.Int(input.Status))
 		}
 		if input.JobName != "" {
-			m = m.WhereLike(dao.SysJob.Columns().JobName,"%"+input.JobName+"%")
+			m = m.WhereLike(dao.SysJob.Columns().JobName, "%"+input.JobName+"%")
 		}
 		if len(input.DateRange) > 1 {
 			m = m.WhereGTE(dao.SysJobLog.Columns().CreatedAt, input.DateRange[0]+" 00:00:00")
@@ -150,5 +150,10 @@ func (s *sSysJobLog) Export(ctx context.Context, input *model.GetJobLogListInput
 	data := utility.ToExcel(resData)
 	var request = g.RequestFromCtx(ctx)
 	response.ToXls(request, data, "SysJobLog")
+	return
+}
+
+func (s *sSysJobLog) ClearJobLogByDays(ctx context.Context, days int) (err error) {
+	_, err = dao.SysJobLog.Ctx(ctx).Delete("to_days(now())-to_days(`created_at`) > ?", days+1)
 	return
 }
