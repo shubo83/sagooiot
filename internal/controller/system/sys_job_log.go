@@ -15,13 +15,13 @@ var SysJobLog = cSysJobLog{}
 type cSysJobLog struct{}
 
 // Get 任务日志详情
-func (a *cSysJobLog) Get(ctx context.Context, req *system.GetJobReq) (res *model.SysJobLogRes, err error) {
+func (a *cSysJobLog) Get(ctx context.Context, req *system.GetJobReq) (res *system.SysJobLogRes, err error) {
 	var out *model.SysJobLogOut
 	if out, err = service.SysJobLog().GetJobLog(ctx, req.Id); err != nil {
 		g.Log().Error(ctx, "获取任务日志详情失败", err)
 		return
 	}
-	res = new(model.SysJobLogRes)
+	res = new(system.SysJobLogRes)
 	if err = gconv.Scan(out, &res); err != nil {
 		g.Log().Error(ctx, "转换任务日志详情失败", err)
 		return
