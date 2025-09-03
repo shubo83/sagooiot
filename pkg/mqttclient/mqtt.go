@@ -2,11 +2,12 @@ package mqttclient
 
 import (
 	"context"
-	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"github.com/gogf/gf/v2/frame/g"
 	"strconv"
 	"sync"
 	"time"
+
+	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/gogf/gf/v2/frame/g"
 )
 
 var systemMqttClient *MqttWrapperClient
@@ -52,7 +53,7 @@ func InitMqtt(c *MqttConf) (err error) {
 // getNewClient 获取新的mqtt客户端
 func getNewClient(opts *mqtt.ClientOptions) (err error) {
 	mqttClient := mqtt.NewClient(opts)
-	if token := mqttClient.Connect(); token.Wait() && token.Error() != nil {
+	if token := mqttClient.Connect(); token.WaitTimeout(10*time.Second) && token.Error() != nil {
 		return token.Error()
 	} else {
 		systemMqttClient = &MqttWrapperClient{
