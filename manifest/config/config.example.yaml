@@ -96,7 +96,7 @@ mqtt:
   qos: 1
   auth:
     userName: xinjy
-    userPassWorld: 123456
+    userPassWord: 123456
 
 # 时序数据库配置
 tsd:

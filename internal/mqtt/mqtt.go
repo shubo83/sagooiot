@@ -3,10 +3,11 @@ package mqtt
 import (
 	"context"
 	"encoding/json"
+	"sagooiot/pkg/mqttclient"
+
 	MQTT "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
-	"sagooiot/pkg/mqttclient"
 )
 
 func InitSystemMqtt() error {
@@ -16,7 +17,7 @@ func InitSystemMqtt() error {
 		Addr:     g.Cfg().MustGet(ctx, "mqtt.addr").String(),
 		ClientId: g.Cfg().MustGet(ctx, "mqtt.clientId").String(),
 		UserName: g.Cfg().MustGet(ctx, "mqtt.auth.userName").String(),
-		Password: g.Cfg().MustGet(ctx, "mqtt.auth.userPassWorld").String(),
+		Password: g.Cfg().MustGet(ctx, "mqtt.auth.userPassWord").String(),
 	})
 	return err
 }

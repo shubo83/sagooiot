@@ -5,9 +5,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"github.com/gogf/gf/v2/frame/g"
-	"github.com/gogf/gf/v2/util/guid"
 	"math"
 	"math/rand"
 	"os"
@@ -16,6 +13,10 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	mqtt "github.com/eclipse/paho.mqtt.golang"
+	"github.com/gogf/gf/v2/frame/g"
+	"github.com/gogf/gf/v2/util/guid"
 )
 
 // 结构体定义
@@ -75,7 +76,7 @@ func main() {
 
 	address = g.Cfg().MustGet(context.Background(), "mqtt.addr", "127.0.0.1:1883").String()
 	mqttUserName = g.Cfg().MustGet(context.Background(), "mqtt.auth.userName", "").String()
-	mqttPassword = g.Cfg().MustGet(context.Background(), "mqtt.auth.userPassWorld", "").String()
+	mqttPassword = g.Cfg().MustGet(context.Background(), "mqtt.auth.userPassWord", "").String()
 
 	initDeviceDelays(NumGoroutines, OneMessageDuration)
 }
