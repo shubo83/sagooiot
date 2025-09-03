@@ -2,10 +2,11 @@ package router
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/net/ghttp"
 	commonController "sagooiot/internal/controller/common"
 	systemController "sagooiot/internal/controller/system"
 	"sagooiot/internal/service"
+
+	"github.com/gogf/gf/v2/net/ghttp"
 )
 
 // System 系统默认功能的路由，不含业务属性的
@@ -49,10 +50,8 @@ func System(ctx context.Context, group *ghttp.RouterGroup) {
 			systemController.SysOperLog,      //操作日志管理
 			systemController.SysLoginLog,     //访问日志管理
 
-			systemController.SysJob, //定时任务管理
-
-			systemController.SysJobLog, //定时任务日志
-
+			systemController.SysJob,        //定时任务管理
+			systemController.SysJobLog,     //定时任务日志
 			systemController.SysUserOnline, //在线用户
 
 			systemController.SysNotifications, //消息中心

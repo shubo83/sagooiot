@@ -2,9 +2,10 @@ package router
 
 import (
 	"context"
-	"github.com/gogf/gf/v2/net/ghttp"
 	analysisController "sagooiot/internal/controller/analysis"
 	"sagooiot/internal/service"
+
+	"github.com/gogf/gf/v2/net/ghttp"
 )
 
 // Analysis 分析统计相关的接口
